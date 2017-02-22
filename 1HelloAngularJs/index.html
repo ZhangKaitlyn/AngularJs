@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Hello AngularJs</title>
+	<script src="angular/angular.js"></script>
+</head>
+<body ng-app="helloApp">
+	<div>Hello AngularJs</div>
+
+	<h2>数据绑定</h2>
+	<input type="text" placeholder="Your Name" ng-model="name">
+	<p ng-bind="name" ng-init="name='kaitlyn'">hello</p>
+	<p>{{"Hello "+ name}}</p>
+	<p>{{"Hello "+ (name.length>6? "Your name is too long":name)}}</p>
+	<input type="text" placeholder="Your Lover" ng-model="lover">
+	{{lover.length>0 ? (name+" love "+lover):"Do "+name+" have a lover?"}}
+
+	<h2>控制器与依赖注入</h2>
+	<div ng-controller="helloController">
+		<p ng-bind="name"></p>
+		<div ng-controller="second"></div>
+	</div>
+	<p ng-bind="name"></p>
+<script>
+		var app=angular.module("helloApp",[]);//module(name,dependent) 第一个参数name为模块名字，第二个参数dependent为该模块所需的依赖模块，是一个数组
+		app.controller("helloController",function($scope){
+			$scope.name="hello";
+			console.log("22222");
+		});
+		// app.registerController("second",function ($scope) {
+		// 	console.log("11111");
+		// });
+</script>
+</body>
+
+</html>
