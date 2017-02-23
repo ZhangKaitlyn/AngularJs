@@ -6,7 +6,11 @@
 	<script src="angular/angular.js"></script>
 </head>
 <body ng-app="helloApp">
-	<div>Hello AngularJs</div>
+	<div>Hello AngularJs {{FirstName}}</div>
+
+	<script>
+		var app=angular.module("helloApp",[]);//module(name,dependent) 第一个参数name为模块名字，第二个参数dependent为该模块所需的依赖模块，是一个数组
+	</script>
 
 	<h2>数据绑定</h2>
 	<input type="text" placeholder="Your Name" ng-model="name">
@@ -19,19 +23,117 @@
 	<h2>控制器与依赖注入</h2>
 	<div ng-controller="helloController">
 		<p ng-bind="name"></p>
-		<div ng-controller="second"></div>
 	</div>
 	<p ng-bind="name"></p>
-<script>
-		var app=angular.module("helloApp",[]);//module(name,dependent) 第一个参数name为模块名字，第二个参数dependent为该模块所需的依赖模块，是一个数组
+
+	<script>
 		app.controller("helloController",function($scope){
 			$scope.name="hello";
-			console.log("22222");
 		});
-		// app.registerController("second",function ($scope) {
-		// 	console.log("11111");
-		// });
-</script>
+	</script>
+
+	<h2>HTTP</h2>
+	<div ng-controller="http-get">
+		<ul>
+			<li ng-repeat="item in sites">{{item.Country}}------{{item.Name}}------{{item.Url}}</li>
+		</ul>
+	</div>
+	<div ng-controller="http-post">
+		<input id="username" type="text" name="username" placeholder="名字">
+		<input type="text" id="age" name="age" placeholder="年龄">
+		<input type="button" value="提交" ng-click="httpSubmit()">
+	</div>
+
+	<script>
+		app.controller("http-get",function($scope,$http){
+			$http.get('api/sites.php').then(function(data){
+				$scope.sites=data.data.sites;
+			}).catch(function(err){
+				console.log("error"+err);
+			});
+		});
+		app.config(function($httpProvider){//修改Angular的$httpProvider的默认处理方式,php才能通过$_POST获取参数
+			$httpProvider.defaults.transformRequest=function(obj){
+				var str=[];
+				for(var p in obj){
+					str.push(encodeURIComponent(p)+"="+encodeURIComponent(obj[p]));
+				}
+				return str.join("&");
+			};
+			$httpProvider.defaults.headers.post={
+				'Content-Type':'application/x-www-form-urlencoded'
+			}
+
+		})
+		app.controller("http-post",function($scope,$http){
+			$scope.httpSubmit=function(){
+				var username=document.getElementById('username').value;
+				var age=document.getElementById('age').value;
+				$http.post('api/saveUser.php',{
+					"username":username,
+					"age":age
+				}).then(function(data){
+					$scope.username=data.data.username;
+					$scope.age=data.data.age;
+				})
+			}
+		});
+	</script>
+
+	<h2>run()和$rootscope</h2>
+	<div ng-controller="ctrl">
+		{{rootName}}
+	</div>
+	<div ng-bind="rootName"></div>
+	<div>
+		<p>run()一般用来定义、初始化全局的数据</p>
+		<p>如果我们希望某些代码在所有Controller之前执行，那么可以将其下载run()里面</p>
+	</div>
+
+	<script>
+		app.controller("ctrl",function($scope,$rootScope){
+			$rootScope.rootName="Hello AngularJs";
+		});
+		app.run(function($rootScope){
+			$rootScope.FirstName="Zhang";
+		})
+	</script>
+
+	<h2>$apply()、$timeout()、$watch()</h2>
+	<div ng-controller="applyCtrl">
+		{{applyName}}
+		<p>在AngularJs外部对AngularJs内部的数据进行修改后，并不会实时作用到view层。</p>
+	</div>
+	<div ng-controller="orderCtrl">
+		<span>单价：{{order.price}}</span>
+		<input type="number" name="number" value={{order.number}}>
+		<span>运费:{{order.trans}}</span>
+		<p>总价：{{order.price*order.number+order.trans}}</p>
+	</div>
+
+	<script>
+		app.controller("applyCtrl",function($scope,$timeout){
+			$scope.applyName="Hello";
+			setTimeout(function(){
+				$scope.$apply(function(){//$apply()强制将当前$scope中的数据应用到View中去
+					$scope.applyName="kaitlyn";
+				});
+			},2000);
+			$timeout(function(){
+				$scope.applyName="new Kaitlyn";
+			},4000);
+		});
+		app.controller("orderCtrl",function($scope){
+			$scope.order={
+				price:20,
+				number:1,
+				trans:10
+			};
+			$scope.watch($scope.num,function(newVal,oldVal){
+				$scope.trans=newVal>5?0:10;
+			})
+		});
+	</script>
 </body>
 
 </html>
