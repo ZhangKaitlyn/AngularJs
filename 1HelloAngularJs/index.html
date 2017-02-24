@@ -3,7 +3,13 @@
 <head>
 	<meta charset="utf-8">
 	<title>Hello AngularJs</title>
+	<style>
+		.c1{
+			background-color: red;
+		}
+	</style>
 	<script src="angular/angular.js"></script>
+	<script src="angular/angular-route.js"></script>
 </head>
 <body ng-app="helloApp">
 	<div>Hello AngularJs {{FirstName}}</div>
@@ -106,7 +112,7 @@
 	</div>
 	<div ng-controller="orderCtrl">
 		<span>单价：{{order.price}}</span>
-		<input type="number" name="number" value={{order.number}}>
+		<input type="number" name="number" value=1 ng-model="order.number">
 		<span>运费:{{order.trans}}</span>
 		<p>总价：{{order.price*order.number+order.trans}}</p>
 	</div>
@@ -129,11 +135,76 @@
 				number:1,
 				trans:10
 			};
-			$scope.watch($scope.num,function(newVal,oldVal){
-				$scope.trans=newVal>5?0:10;
+			$scope.$watch("order.number",function(newVal,oldVal){
+				// console.log(newVal+":"+oldVal);
+				$scope.order.trans=($scope.order.price*$scope.order.number)>100? 0:10
 			})
 		});
 	</script>
+
+	<h2>element()、常用方法，以及使用jQuery</h2>
+	<div ng-controller="jqueryCtrl"></div>
+	<script>
+		app.controller("jqueryCtrl",function($scope){
+			var body=angular.element(document.body);//将body转为jQuery对象
+			body.css("background-color","#EEE");//用css()方法设置样式
+			var div=angular.element("<div></div>");//创建了一个DIV
+			div.html("Hello Angular----Kaitlyn");
+			body.append(div);
+
+		})
+	</script>
+
+	<h2>ng-include</h2>
+	<h4>加载HTML文件模板</h4>
+	<div ng-controller="htmlTplCtrl">
+		<p>通过ng-include加载HTML文件模板</p>
+		<div ng-include="templateUrl"></div>
+		<div ng-include src="templateUrl"></div>
+	</div>
+	<h4>加载当前页定义的模板</h4>
+	<div ng-controller="nowCtrl">
+		<div ng-include="nowPageTpl"></div>
+		<div ng-include src="nowPageTpl"></div>
+		<script type="text/ng-template" id="template2">
+			<div>这是来自当前页定义的模板</div>
+		</script>
+	</div>
+	<script>
+		app.controller("htmlTplCtrl",function($scope){
+			$scope.templateUrl="template.html";
+		});
+		app.controller("nowCtrl",function($scope){
+			$scope.nowPageTpl="template2";
+		})
+	</script>
+
+	<h2>ng-class、ng-style</h2>
+	<div ng-class="{c1:true}">ng-class设置class属性</div>
+	<div ng-style="{'background-color':'#000',color:'#FFF'}">ng-style设置style属性</div>
+
+	<div ng-app="routApp">
+		<a href="#/index">首页</a>
+		<a href="#/list">列表页</a>
+		<div ng-view></div>
+		<script>
+			var routApp=angular.module("routApp",["ngRoute"]);
+			routApp.config(function($routeProvider){
+				$routeProvider.when("index",{
+					template:"<div>这是首页的模板</div>"
+				}).when("list",{
+					template:"<div>这是列表页的模板</div>"
+				}).otherwise({
+					template:"<div>这是列表页的模板</div>"
+				});
+			});
+		</script>
+	</div>
+	<footer>
+		<div class="container">
+			
+		</div>
+	</footer>
 </body>
 
 </html>
