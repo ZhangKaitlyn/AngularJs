@@ -15,7 +15,7 @@
 	<div>Hello AngularJs {{FirstName}}</div>
 
 	<script>
-		var app=angular.module("helloApp",[]);//module(name,dependent) 第一个参数name为模块名字，第二个参数dependent为该模块所需的依赖模块，是一个数组
+		var app=angular.module("helloApp",["ngRoute"]);//module(name,dependent) 第一个参数name为模块名字，第二个参数dependent为该模块所需的依赖模块，是一个数组
 	</script>
 
 	<h2>数据绑定</h2>
@@ -183,28 +183,85 @@
 	<div ng-class="{c1:true}">ng-class设置class属性</div>
 	<div ng-style="{'background-color':'#000',color:'#FFF'}">ng-style设置style属性</div>
 
-	<div ng-app="routApp">
-		<a href="#/index">首页</a>
-		<a href="#/list">列表页</a>
+	<h2>路由</h2>
+	<div>
+		<a href="#/list">列表</a>
+		<a href="#/detail">详情</a>
 		<div ng-view></div>
-		<script>
-			var routApp=angular.module("routApp",["ngRoute"]);
-			routApp.config(function($routeProvider){
-				$routeProvider.when("index",{
-					template:"<div>这是首页的模板</div>"
-				}).when("list",{
-					template:"<div>这是列表页的模板</div>"
-				}).otherwise({
-					template:"<div>这是列表页的模板</div>"
-				});
-			});
-		</script>
 	</div>
-	<footer>
-		<div class="container">
-			
-		</div>
-	</footer>
+	<script>
+		//路由第一个例子
+		// app.config(function($routeProvider,$locationProvider){
+		// 	$locationProvider.hashPrefix('');
+		// 	$routeProvider.when("/detail",{
+		// 		template:"<div>这是详情的模板</div>"
+		// 	}).when("/list",{
+		// 		template:"<div>这是列表页的模板</div>"
+		// 	}).otherwise({
+		// 		template:"<div>这是收页的模板</div>"
+		// 	});
+		// });
+
+		//路由中使用数据绑定
+		// app.config(function($routeProvider,$locationProvider){
+		// 	$locationProvider.hashPrefix("");
+		// 	$routeProvider.when("/detail",{
+		// 		template:"<div>这是详情模板{{data}}---{{author}}</div>",
+		// 		controller:"detailCtrl"
+		// 	}).when("/list",{
+		// 		template:"<div>这是列表模板{{data}}</div>",
+		// 		controller:"listCtrl"
+		// 	}).otherwise({
+		// 		redirectTo:"/list"
+		// 	});
+		// });
+		// app.controller("detailCtrl",function ($scope) {
+		// 	$scope.data="detail";
+		// 	$scope.author="Kaitlyn";
+		// });
+		// app.controller("listCtrl",function($scope){
+		// 	$scope.data="list";
+		// });
+
+		//路由 传递参数
+		app.run(function($rootScope){
+			$rootScope.goods=[
+				{id:1 , tit:"商品一"},
+				{id:2 , tit:"商品二"}
+			];
+		});
+		app.config(function($routeProvider,$locationProvider){
+			$locationProvider.hashPrefix("");
+			$routeProvider.when("/detail",{
+				template:"<div>这是详情模板{{data}}---{{author}}</div>",
+				controller:"detailCtrl"
+			}).when("/list",{
+				template:"<ul><li ng-repeat='item in goods'><a href='#/detail/{{item.id}}'>{{item.tit}}</a></li></ul>",
+				controller:"listCtrl"
+			}).when("/detail/:id",{
+				// template:"<div>商品ID：{{id}},标题：{{tit}}</div>",
+				templateUrl:"detail.html",
+				controller:"goodDetailCtrl"
+			}).otherwise({
+				redirectTo:"/list"
+			});
+		});
+		app.controller("detailCtrl",function ($scope) {
+			$scope.data="detail";
+			$scope.author="Kaitlyn";
+		});
+		app.controller("listCtrl",function($scope){
+			$scope.data="list";
+		});
+		app.controller("goodDetailCtrl",function ($scope,$rootScope,$routeParams) {
+			var id=$routeParams.id;
+			var detail=$rootScope.goods.find(function(item){
+				return item.id==id;
+			});
+			$scope.id=id;
+			$scope.tit=detail.tit;
+		})
+	</script>
 </body>
 
 </html>
