@@ -1,1 +1,10 @@
-<div>商品ID：{{id}},标题：{{tit}}</div>
+<h2>商品详情</h2>
+<div>ID:{{id}}</div>
+<div>标题：{{tit}}</div>
+<div>单价：{{price}}</div>
+<div>数量： <input type="number" ng-model="number" value="{{number}}"></div>
+<div>运费：{{trans}}</div>
+<div>总价：{{sum()}}</div>
+<div>
+	<button ng-click="btnClick()">点击跳转</button>
+</div>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>路由--AngularJs</title>
+	<script src="angular/angular.js"></script>
+	<script src="angular/angular-route.js"></script>
+</head>
+<body ng-app="routeCtrl">
+<a href="#/index">首页</a>
+<a href="#/list">商品列表</a>
+<div ng-view></div>
+<script>
+	var app=angular.module("routeCtrl",["ngRoute"]);
+	app.run(function($rootScope){
+		$rootScope.goods=[
+			{id:1,tit:"商品1",price:20},
+			{id:2,tit:"商品2",price:150}
+		];
+	});
+	app.config(function ($routeProvider,$locationProvider) {
+		$locationProvider.hashPrefix("");
+		$routeProvider.when("/index",{
+			template:"<div>这是首页模板{{data}}---{{author}}</div>",
+			controller:"indexCtrl"
+		}).when("/list",{
+			template:"<ul><li ng-repeat='item in goods'><a href='#/detail/{{item.id}}'>{{item.tit}}</a></li></ul>",
+			controller:"listCtrl"
+		}).when("/detail/:id",{
+			templateUrl:"detail.html",
+			controller:"detailCtrl"
+		}).otherwise({
+			redirectTo:"/index"
+		});
+	});
+	app.controller("indexCtrl",function($scope){
+		$scope.data="--index页模板";
+		$scope.author="Kaitlyn";
+	});
+	app.controller("listCtrl",function($scope){
+
+	});
+	app.controller("detailCtrl",function($scope,$routeParams,$rootScope,$location){
+		var id=$routeParams.id;
+		var detail=$rootScope.goods.find(function(item){
+			return item.id==id;
+		});
+		$scope.id=id;
+		$scope.price=detail.price;
+		$scope.tit=detail.tit;
+		$scope.number=1;
+
+		$scope.sum=function(){
+			return $scope.number*$scope.price;
+		}
+
+		$scope.$watch($scope.sum,function(newVal){
+			console.log(newVal);
+			$scope.trans=(newVal>200)?0:10;//运费
+		});
+
+		$scope.btnClick=function(){
+			var all=$scope.sum();
+			if(all>=300){
+				$location.path("/index");
+			}else{
+				$location.path("/list").replace();
+			}
+		}
+	})
+</script>
+</body>
+</html>
