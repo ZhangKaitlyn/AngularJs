@@ -3,10 +3,41 @@
 <head>
 	<meta charset="utf-8">
 	<title>ngAnimate</title>
+	<style>
+		html,body{
+			padding: 0;
+			margin: 0;
+			height: 100%;
+			overflow: hidden;
+		}
+		#container{height:100%;position:relative;}
+#container > div[ng-view]{position:absolute;left:0px;right:0px;top:50px;bottom:0px;overflow-x:hidden;overflow-y:auto;border:1px solid #444;background-color:#e9e8e8;}
+.ng-enter{transition:0.5s;transform:translateX(100%);}
+.ng-enter-active{transform:translateX(0px);}
+.ng-leave{transition:0.5s;}
+.ng-leave-active{transform:translateX(-100%);}
+	</style>
 	<script src="angular/angular.js"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/angular-animate.js"></script>
+	<script src="angular/angular-route.js"></script>
+	<script src="angular/angular-animate.js"></script>
 </head>
-<body>
-
+<body ng-app="animateApp">
+<div id="container">
+	<a href="#/index">首页</a>
+	<a href="#/list">列表页</a>
+</div>
+<script>
+	var app=angular.module("animateApp",["ngRoute"]);
+	app.config(function($routeProvider,$locationProvider){
+		$locationProvider.hashPrefix("");
+		$routeProvider.when("/index",{
+			template:"<div>这是index模板</div>"
+		}).when("/list",{
+			template:"<div>这是list模板</div>"
+		}).otherwise({
+			redirectTo:"/index"
+		});
+	});
+</script>
 </body>
 </html>
