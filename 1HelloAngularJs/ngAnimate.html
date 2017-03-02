@@ -10,19 +10,24 @@
 			height: 100%;
 			overflow: hidden;
 		}
-		#container{height:100%;position:relative;}
+		#container{width:500px;height: 300px; position:relative;}
 		#container > div[ng-view]{position:absolute;left:0px;right:0px;top:50px;bottom:0px;overflow-x:hidden;overflow-y:auto;border:1px solid #444;background-color:#e9e8e8;}
 		.ng-enter{transition:0.5s;transform:translateX(100%);}
 		.ng-enter-active{transform:translateX(0px);}
 		.ng-leave{transition:0.5s;}
 		.ng-leave-active{transform:translateX(-100%);}
+
+		.slide>.ng-enter{transition:0.5s;transform:translateX(100%);}
+		.slide>.ng-enter-active{transform:translateX(0px);}
+		.slide>.ng-leave{transition:0.5s;}
+		.slide>.ng-leave-active{transform:translateX(-100%);}
 	</style>
 	<script src="angular-1.2.32/angular.js"></script>
 	<script src="angular-1.2.32/angular-route.js"></script>
 	<script src="angular-1.2.32/angular-animate.js"></script>
 </head>
-<body ng-app="animateApp">
-	<div id="container">
+<body>
+	<!-- <div id="container" ng-app="animateApp">
 		<a href="#/index">首页</a>
 		<a href="#/list">列表页</a>
 		<div ng-view></div>
@@ -41,6 +46,38 @@
 				template:"<div>这是list34模板</div>"
 			});
 		});
+	</script> -->
+
+	<div id="animateContainer" ng-app="animateApp2">
+		<a href="#/index">首页</a>
+		<a href="#/list">商品列表页</a>
+		<div ng-view></div>
+	</div>
+	<script>
+		var animateContainer=document.getElementById('animateContainer');
+		var app1=angular.module("animateApp2",["ngRoute","ngAnimate"]);
+		app1.config(function($routeProvider,$locationProvider){
+			// console.log($location.path());
+			$locationProvider.hashPrefix("");
+			$routeProvider.when("/index",{
+				template:"<div>这是index模板</div>"
+			}).when("/list",{
+				template:"<div>这是list模板 <a href='#/detail/1'>商品1</a></div>"
+			}).when("/detail/:id",{
+				template:"<div>这是商品详情页</div>"
+			}).otherwise({
+				template:"<div>这是list34模板</div>"
+			});
+		});
+		app1.run(function($rootScope){
+			$rootScope.$on("$routeChangeStart",function(evt,next,current){
+				animateContainer.setAttribute("class","");
+				if (next.$$route.originalPath=="/detail/:id" && current &&current.$$route.originalPath=="/list") {
+				animateContainer.setAttribute("class","slide");
+					// animateContainer.addClass("slide");
+				}
+			});
+		})
 	</script>
 </body>
 </html>
