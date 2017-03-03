@@ -12,10 +12,10 @@
 		}
 		#container{width:500px;height: 300px; position:relative;}
 		#container > div[ng-view]{position:absolute;left:0px;right:0px;top:50px;bottom:0px;overflow-x:hidden;overflow-y:auto;border:1px solid #444;background-color:#e9e8e8;}
-		.ng-enter{transition:0.5s;transform:translateX(100%);}
+		/*.ng-enter{transition:0.5s;transform:translateX(100%);}
 		.ng-enter-active{transform:translateX(0px);}
 		.ng-leave{transition:0.5s;}
-		.ng-leave-active{transform:translateX(-100%);}
+		.ng-leave-active{transform:translateX(-100%);}*/
 
 		.slide>.ng-enter{transition:0.5s;transform:translateX(100%);}
 		.slide>.ng-enter-active{transform:translateX(0px);}
@@ -72,9 +72,9 @@
 		app1.run(function($rootScope){
 			$rootScope.$on("$routeChangeStart",function(evt,next,current){
 				animateContainer.setAttribute("class","");
+				console.log(next.$$route.originalPath);
 				if (next.$$route.originalPath=="/detail/:id" && current &&current.$$route.originalPath=="/list") {
-				animateContainer.setAttribute("class","slide");
-					// animateContainer.addClass("slide");
+					animateContainer.setAttribute("class","slide");
 				}
 			});
 		})
